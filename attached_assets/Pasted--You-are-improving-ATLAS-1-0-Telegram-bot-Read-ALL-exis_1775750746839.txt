@@ -1,0 +1,836 @@
+
+You are improving "ATLAS 1.0" Telegram bot. Read ALL existing code first, then apply every change below. Do not break existing functionality.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CHANGE 1: EXPAND SUPPORTED MARKETS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Replace the forex_pairs list and Yahoo Finance symbol mapping with this complete system:
+
+Create a file called markets.py with this content:
+
+# Complete market mapping: user_input → yahoo_finance_symbol
+MARKET_MAP = {
+    # ── MAJOR FOREX PAIRS ──────────────────────
+    "EURUSD": "EURUSD=X", "GBPUSD": "GBPUSD=X", "USDJPY": "USDJPY=X",
+    "USDCHF": "USDCHF=X", "AUDUSD": "AUDUSD=X", "USDCAD": "USDCAD=X",
+    "NZDUSD": "NZDUSD=X",
+
+    # ── MINOR FOREX PAIRS ──────────────────────
+    "EURGBP": "EURGBP=X", "EURJPY": "EURJPY=X", "EURCHF": "EURCHF=X",
+    "EURAUD": "EURAUD=X", "EURCAD": "EURCAD=X", "EURNZD": "EURNZD=X",
+    "GBPJPY": "GBPJPY=X", "GBPCHF": "GBPCHF=X", "GBPAUD": "GBPAUD=X",
+    "GBPCAD": "GBPCAD=X", "GBPNZD": "GBPNZD=X", "AUDJPY": "AUDJPY=X",
+    "AUDCHF": "AUDCHF=X", "AUDCAD": "AUDCAD=X", "AUDNZD": "AUDNZD=X",
+    "CADJPY": "CADJPY=X", "CADCHF": "CADCHF=X", "CHFJPY": "CHFJPY=X",
+    "NZDJPY": "NZDJPY=X", "NZDCHF": "NZDCHF=X", "NZDCAD": "NZDCAD=X",
+
+    # ── EXOTIC FOREX PAIRS ─────────────────────
+    "USDSEK": "USDSEK=X", "USDNOK": "USDNOK=X", "USDDKK": "USDDKK=X",
+    "USDSGD": "USDSGD=X", "USDHKD": "USDHKD=X", "USDMXN": "USDMXN=X",
+    "USDZAR": "USDZAR=X", "USDTRY": "USDTRY=X", "USDPLN": "USDPLN=X",
+    "USDCZK": "USDCZK=X", "USDHUF": "USDHUF=X", "USDRUB": "USDRUB=X",
+    "USDCNH": "USDCNH=X", "USDTHB": "USDTHB=X", "USDINR": "USDINR=X",
+    "USDKRW": "USDKRW=X", "USDBRL": "USDBRL=X", "USDCLP": "USDCLP=X",
+    "USDCOP": "USDCOP=X", "USDMYR": "USDMYR=X", "USDPHP": "USDPHP=X",
+    "USDIDR": "USDIDR=X", "EURSEK": "EURSEK=X", "EURNOK": "EURNOK=X",
+    "EURPLN": "EURPLN=X", "EURTRY": "EURTRY=X", "EURHUF": "EURHUF=X",
+
+    # ── METALS ────────────────────────────────
+    "XAUUSD": "GC=F",   "GOLD": "GC=F",
+    "XAGUSD": "SI=F",   "SILVER": "SI=F",
+    "XPTUSD": "PL=F",   "PLATINUM": "PL=F",
+    "XPDUSD": "PA=F",   "PALLADIUM": "PA=F",
+    "XCUUSD": "HG=F",   "COPPER": "HG=F",
+
+    # ── ENERGY / OIL ──────────────────────────
+    "XTIUSD": "CL=F",   "USOIL": "CL=F",    "WTI": "CL=F",    "WTIUSD": "CL=F",
+    "XBRUSD": "BZ=F",   "UKOIL": "BZ=F",    "BRENT": "BZ=F",
+    "NATGAS": "NG=F",   "XNGUSD": "NG=F",
+
+    # ── US INDICES ────────────────────────────
+    "SPX500": "^GSPC",  "SP500": "^GSPC",   "US500": "^GSPC",  "SPX": "^GSPC",
+    "NAS100": "^NDX",   "NDX": "^NDX",      "US100": "^NDX",   "NASDAQ": "^NDX",
+    "US30":   "^DJI",   "DJI": "^DJI",      "DOW": "^DJI",     "DOWJONES": "^DJI",
+    "US2000": "^RUT",   "RUT": "^RUT",      "RUSSELL": "^RUT",
+    "VIX":    "^VIX",
+
+    # ── GLOBAL INDICES ────────────────────────
+    "GER40":  "^GDAXI", "DAX": "^GDAXI",    "DE40": "^GDAXI",
+    "UK100":  "^FTSE",  "FTSE": "^FTSE",    "FTSE100": "^FTSE",
+    "FRA40":  "^FCHI",  "CAC40": "^FCHI",
+    "JPN225": "^N225",  "NIKKEI": "^N225",  "JP225": "^N225",
+    "AUS200": "^AXJO",  "ASX200": "^AXJO",
+    "HK50":   "^HSI",   "HANGSENG": "^HSI",
+    "CHN50":  "000300.SS",
+    "STOXX50":"^STOXX50E", "EU50": "^STOXX50E",
+    "SWI20":  "^SSMI",  "SMI": "^SSMI",
+    "SING30": "^STI",
+    "ITA40":  "FTSEMIB.MI",
+    "ESP35":  "^IBEX",
+
+    # ── CURRENCY INDICES ──────────────────────
+    "DXY":    "DX-Y.NYB", "DOLLAR": "DX-Y.NYB", "USDX": "DX-Y.NYB",
+    "EURX":   "EUR=X",
+    "JPYX":   "JPY=X",
+    "GBPX":   "GBP=X",
+
+    # ── CRYPTO (non-pump.fun) ─────────────────
+    "BTCUSD": "BTC-USD", "BITCOIN": "BTC-USD",
+    "ETHUSD": "ETH-USD", "ETHEREUM": "ETH-USD",
+    "SOLUSD": "SOL-USD", "SOLANA": "SOL-USD",
+    "BNBUSD": "BNB-USD",
+    "XRPUSD": "XRP-USD",
+}
+
+# Aliases with slash notation
+SLASH_ALIASES = {}
+for k, v in MARKET_MAP.items():
+    if len(k) >= 6 and "=" not in k and "^" not in k and "." not in k:
+        with_slash = k[:3] + "/" + k[3:]
+        SLASH_ALIASES[with_slash] = v
+
+MARKET_MAP.update(SLASH_ALIASES)
+
+def resolve_symbol(user_input: str) -> tuple:
+    """
+    Returns (yahoo_symbol, display_name, market_type)
+    market_type: 'forex' | 'metal' | 'index' | 'energy' | 'crypto_cex' | None
+    """
+    clean = user_input.upper().strip().replace(" ", "").replace("-", "")
+    
+    if clean in MARKET_MAP:
+        sym = MARKET_MAP[clean]
+        if "=F" in sym or sym in ["GC=F","SI=F","PL=F","PA=F","HG=F","CL=F","BZ=F","NG=F"]:
+            mtype = "metal" if clean.startswith("X") or clean in ["GOLD","SILVER","PLATINUM","PALLADIUM","COPPER"] else "energy"
+        elif sym.startswith("^") or sym.endswith(".NYB") or "." in sym:
+            mtype = "index"
+        elif sym.endswith("-USD"):
+            mtype = "crypto_cex"
+        else:
+            mtype = "forex"
+        return sym, clean, mtype
+    
+    return None, clean, None
+
+In analyzer.py, replace fetch_forex_data with this robust version:
+
+async def fetch_forex_data(user_input: str, client: httpx.AsyncClient) -> dict:
+    from markets import resolve_symbol
+    
+    yahoo_symbol, display_name, market_type = resolve_symbol(user_input)
+    
+    if not yahoo_symbol:
+        # Try constructing symbol directly as fallback
+        clean = user_input.upper().replace("/","").replace("-","").strip()
+        # Try common patterns
+        fallback_attempts = [
+            f"{clean}=X",           # standard forex
+            f"{clean[:3]}=F",       # futures guess
+            f"^{clean}",            # index guess
+        ]
+        for attempt in fallback_attempts:
+            test = await _try_yahoo_fetch(attempt, client)
+            if test:
+                yahoo_symbol = attempt
+                market_type = "forex"
+                break
+        
+        if not yahoo_symbol:
+            return {"error": f"Market '{user_input}' not recognized. Try: EURUSD, XAUUSD, NAS100, US30, DXY"}
+
+    # Fetch 1H (5 days) and 15M (1 day) in parallel
+    results = await asyncio.gather(
+        _try_yahoo_fetch(yahoo_symbol, client, interval="1h", range_="5d"),
+        _try_yahoo_fetch(yahoo_symbol, client, interval="15m", range_="1d"),
+        return_exceptions=True
+    )
+    
+    ohlcv_1h  = results[0] if not isinstance(results[0], Exception) and results[0] else []
+    ohlcv_15m = results[1] if not isinstance(results[1], Exception) and results[1] else []
+
+    if not ohlcv_1h and not ohlcv_15m:
+        return {"error": f"Could not fetch data for {display_name}. Market may be closed or symbol unavailable."}
+
+    current = ohlcv_1h[-1]["close"] if ohlcv_1h else (ohlcv_15m[-1]["close"] if ohlcv_15m else 0)
+
+    return {
+        "type": "forex",
+        "pair": display_name,
+        "yahoo_symbol": yahoo_symbol,
+        "market_type": market_type,
+        "ohlcv_1h": ohlcv_1h,
+        "ohlcv_15m": ohlcv_15m,
+        "current_price": current
+    }
+
+async def _try_yahoo_fetch(symbol: str, client: httpx.AsyncClient, interval: str = "1h", range_: str = "5d") -> list:
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+        "Accept": "application/json"
+    }
+    urls_to_try = [
+        f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}",
+        f"https://query2.finance.yahoo.com/v8/finance/chart/{symbol}",
+    ]
+    for url in urls_to_try:
+        try:
+            r = await client.get(url, params={"interval": interval, "range": range_}, headers=headers, timeout=15)
+            if r.status_code == 200:
+                parsed = parse_yahoo_ohlcv(r)
+                if parsed:
+                    return parsed
+        except Exception:
+            continue
+    return []
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CHANGE 2: EQUITY CONFIRMATION FLOW
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Create a file called user_session.py:
+
+import json, os
+
+SESSION_FILE = "sessions.json"
+
+def load_sessions() -> dict:
+    if not os.path.exists(SESSION_FILE): return {}
+    with open(SESSION_FILE) as f: return json.load(f)
+
+def save_sessions(data: dict):
+    with open(SESSION_FILE, "w") as f: json.dump(data, f, indent=2)
+
+def get_session(user_id: int) -> dict:
+    return load_sessions().get(str(user_id), {})
+
+def set_session(user_id: int, data: dict):
+    sessions = load_sessions()
+    sessions[str(user_id)] = data
+    save_sessions(sessions)
+
+def update_session(user_id: int, key: str, value):
+    session = get_session(user_id)
+    session[key] = value
+    set_session(user_id, session)
+
+def clear_pending(user_id: int):
+    session = get_session(user_id)
+    session.pop("pending_analysis", None)
+    session.pop("state", None)
+    set_session(user_id, session)
+
+In main.py, add a ConversationHandler for the forex equity flow.
+Import: from telegram.ext import ConversationHandler, MessageHandler, filters
+
+States:
+AWAITING_EQUITY = 1
+AWAITING_GAMEPLAN_CONFIRM = 2
+AWAITING_CUSTOM_GAMEPLAN = 3
+
+The flow works like this:
+
+When user runs /analyze EURUSD (or any non-meme pair):
+1. Save pending analysis to session: {"pending_analysis": "EURUSD", "state": "awaiting_equity"}
+2. Bot asks:
+"💼 Before I analyze {PAIR}, I need to know your trading equity.
+
+What is your current trading account balance?
+Reply with a number (e.g: 50, 150, 500)
+
+This helps me recommend the right Game Plan and risk parameters for you."
+
+When user replies with a number (AWAITING_EQUITY state):
+- Parse number from message
+- Determine recommended gameplan:
+  if equity <= 50: gp = "Super Scalping", max_sl_pips = 30, style = "Very tight SL, quick in/out trades"
+  elif equity <= 100: gp = "Normal Scalping", max_sl_pips = 60, style = "Short timeframe, moderate SL"
+  elif equity <= 500: gp = "Intraday Trading", max_sl_pips = 100, style = "Hold hours, use S&R zones"
+  else: gp = "Day Trading", max_sl_pips = 200, style = "Larger moves, hold full day"
+  
+- Save to session: equity, recommended_gp, max_sl_pips
+- Bot sends confirmation:
+"📊 Based on your equity of ${equity}:
+
+🎯 Recommended Game Plan: {gp}
+📏 Max SL: {max_sl_pips} pips
+📋 Style: {style}
+
+Apakah mau menggunakan Game Plan Trading yang saya rekomendasikan sesuai Margin anda?
+
+Reply YES to confirm or NO to choose your own."
+
+When user replies YES (AWAITING_GAMEPLAN_CONFIRM):
+- Save gameplan to session
+- Proceed to run forex analysis with that gameplan
+- Call handle_forex_analysis(user_id, pair, session)
+
+When user replies NO (AWAITING_GAMEPLAN_CONFIRM):
+- Bot asks:
+"🎮 Game Plan Trading yang kamu inginkan seperti apa?
+
+Choose one:
+1️⃣ Scalping
+2️⃣ Intraday
+3️⃣ Day Trade
+
+Reply with the number or name."
+
+When user replies with 1/2/3 or name (AWAITING_CUSTOM_GAMEPLAN):
+  if choice == scalping: gp = "Scalping", max_sl_pips = 60
+  if choice == intraday: gp = "Intraday", max_sl_pips = 100
+  if choice == day trade: gp = "Day Trading", max_sl_pips = 200
+- Confirm: "✅ Got it! Using {gp} Game Plan. Running analysis..."
+- Proceed to forex analysis
+
+IMPORTANT: Store equity and gameplan in session so user does NOT need to re-enter on every analysis.
+Check at start of forex flow: if session already has equity and gameplan → skip asking, go straight to analysis.
+Add command /reset_profile to clear session so user can re-enter equity.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CHANGE 3: FOREX SIGNAL — BUY/SELL/NO ENTRY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Replace compute_forex_signal in signals.py with this complete version:
+
+def compute_forex_signal(data: dict, gameplan: dict) -> dict:
+    candles_1h = data.get("ohlcv_1h", [])
+    candles_15m = data.get("ohlcv_15m", [])
+    pair = data.get("pair", "UNKNOWN")
+    market_type = data.get("market_type", "forex")
+    
+    if not candles_1h or len(candles_1h) < 20:
+        return {"signal": "INSUFFICIENT DATA ❌", "direction": None, "reason": "Not enough candle data."}
+
+    closes_1h = [c["close"] for c in candles_1h]
+    current = closes_1h[-1]
+    
+    max_sl_pips = gameplan.get("max_sl_pips", 100)
+    gp_name = gameplan.get("name", "Intraday")
+
+    # ── INDICATORS ────────────────────────────────────────
+    ema20 = compute_ema(closes_1h, 20)
+    ema50 = compute_ema(closes_1h, 50)
+    ema200 = compute_ema(closes_1h, 200) if len(closes_1h) >= 200 else []
+    rsi = compute_rsi(closes_1h)
+    atr = compute_atr(candles_1h)
+    levels = find_swing_levels(candles_1h)
+
+    supports = levels["support"]       # below current price
+    resistances = levels["resistance"] # above current price
+
+    # ── TREND BIAS ────────────────────────────────────────
+    ema_bull = len(ema20) > 0 and len(ema50) > 0 and ema20[-1] > ema50[-1]
+    ema_strong_bull = ema_bull and (len(ema200) > 0 and closes_1h[-1] > ema200[-1])
+    ema_strong_bear = not ema_bull and (len(ema200) > 0 and closes_1h[-1] < ema200[-1])
+    
+    overall_bias = "BULLISH" if ema_bull else "BEARISH"
+
+    # ── MARKET STRUCTURE ──────────────────────────────────
+    last5 = closes_1h[-5:]
+    higher_highs = all(candles_1h[-5+i]["high"] >= candles_1h[-5+i-1]["high"] for i in range(1,5))
+    lower_lows   = all(candles_1h[-5+i]["low"]  <= candles_1h[-5+i-1]["low"]  for i in range(1,5))
+    structure = "UPTREND" if higher_highs else "DOWNTREND" if lower_lows else "RANGING"
+
+    # ── ENTRY TYPE DECISION ───────────────────────────────
+    # Determine whether price is AT zone, NEAR zone, or FAR from zone
+    
+    nearest_support = supports[0] if supports else None
+    nearest_resist  = resistances[0] if resistances else None
+
+    dist_to_support = abs(current - nearest_support) / current * 100 if nearest_support else 999
+    dist_to_resist  = abs(current - nearest_resist)  / current * 100 if nearest_resist  else 999
+
+    # AT ZONE: within 0.15% of level
+    # NEAR ZONE: within 0.5% of level  
+    # FAR: beyond 0.5%
+
+    at_support   = dist_to_support < 0.15
+    near_support = 0.15 <= dist_to_support < 0.50
+    at_resist    = dist_to_resist  < 0.15
+    near_resist  = 0.15 <= dist_to_resist  < 0.50
+
+    # ── LONG CONDITIONS ───────────────────────────────────
+    long_score = 0
+    long_reasons = []
+
+    if ema_bull:             long_score += 1; long_reasons.append("EMA20 > EMA50 (bullish bias)")
+    if ema_strong_bull:      long_score += 1; long_reasons.append("Price above EMA200 (strong uptrend)")
+    if 40 <= rsi <= 65:      long_score += 1; long_reasons.append(f"RSI {rsi:.1f} — room to run upward")
+    if structure == "UPTREND": long_score += 1; long_reasons.append("Market structure: higher highs forming")
+    if at_support or near_support: long_score += 2; long_reasons.append(f"Price {'at' if at_support else 'near'} key support ({nearest_support:.5f})")
+
+    # ── SHORT CONDITIONS ──────────────────────────────────
+    short_score = 0
+    short_reasons = []
+
+    if not ema_bull:           short_score += 1; short_reasons.append("EMA20 < EMA50 (bearish bias)")
+    if ema_strong_bear:        short_score += 1; short_reasons.append("Price below EMA200 (strong downtrend)")
+    if 35 <= rsi <= 60:        short_score += 1; short_reasons.append(f"RSI {rsi:.1f} — room to fall")
+    if structure == "DOWNTREND": short_score += 1; short_reasons.append("Market structure: lower lows forming")
+    if at_resist or near_resist:  short_score += 2; short_reasons.append(f"Price {'at' if at_resist else 'near'} key resistance ({nearest_resist:.5f})")
+
+    # ── NO ENTRY CONDITIONS ───────────────────────────────
+    no_entry_reasons = []
+    
+    if structure == "RANGING" and long_score < 3 and short_score < 3:
+        no_entry_reasons.append("Market is ranging — no clear directional bias")
+    if 45 <= rsi <= 55 and not (at_support or at_resist or near_support or near_resist):
+        no_entry_reasons.append("RSI neutral and price not at any key zone")
+    if dist_to_support > 1.0 and dist_to_resist > 1.0:
+        no_entry_reasons.append("Price is between zones — far from any valid entry")
+
+    # ── DETERMINE DIRECTION ───────────────────────────────
+    if no_entry_reasons and long_score < 4 and short_score < 4:
+        direction = "NO ENTRY"
+    elif long_score >= 3 and long_score > short_score:
+        direction = "LONG"
+    elif short_score >= 3 and short_score > long_score:
+        direction = "SHORT"
+    elif long_score == short_score:
+        direction = "NO ENTRY"
+        no_entry_reasons.append("Conflicting signals — bullish and bearish equally weighted")
+    else:
+        direction = "NO ENTRY"
+        no_entry_reasons.append("Insufficient confluence for a valid setup")
+
+    if direction == "NO ENTRY":
+        return {
+            "signal": "NO ENTRY ⏸️",
+            "direction": None,
+            "overall_bias": overall_bias,
+            "structure": structure,
+            "rsi": rsi,
+            "ema_bias": "Bullish" if ema_bull else "Bearish",
+            "atr": atr,
+            "supports": supports,
+            "resistances": resistances,
+            "reasons": no_entry_reasons,
+            "message": "No valid setup at this time. " + " | ".join(no_entry_reasons)
+        }
+
+    # ── CALCULATE ENTRY TYPE ──────────────────────────────
+    # Convert pips to price based on market type
+    pip_value = get_pip_value(data.get("pair",""), market_type)
+    max_sl_price = max_sl_pips * pip_value
+
+    if direction == "LONG":
+        active_reasons = long_reasons
+        if at_support:
+            entry_type = "BUY NOW 🔥"
+            entry_price = current
+            entry_rationale = f"Price is AT support zone ({nearest_support:.5f}). Enter immediately."
+        elif near_support:
+            entry_type = "BUY LIMIT 📌"
+            entry_price = round(nearest_support + (atr * 0.05), 6)
+            entry_rationale = f"Set BUY LIMIT at {entry_price:.5f} — wait for pullback to support zone."
+        else:
+            entry_type = "BUY LIMIT 📌"
+            entry_price = round(nearest_support + (atr * 0.05), 6) if nearest_support else round(current - atr, 6)
+            entry_rationale = f"Support at {nearest_support:.5f if nearest_support else 'N/A'} — zone is far. Wait for price to come to you."
+        
+        raw_sl = entry_price - (atr * 1.5)
+        sl_distance = entry_price - raw_sl
+        
+        # Enforce max SL pip limit
+        if sl_distance > max_sl_price:
+            raw_sl = entry_price - max_sl_price
+            sl_note = f"⚠️ SL adjusted to {max_sl_pips} pip limit for your {gp_name} game plan"
+        else:
+            sl_note = None
+        
+        sl = round(raw_sl, 6)
+        tp1 = round(resistances[0], 6) if resistances else round(entry_price + atr * 2, 6)
+        tp2 = round(resistances[1], 6) if len(resistances) > 1 else round(entry_price + atr * 3.5, 6)
+        tp3 = round(entry_price + (tp1 - entry_price) * 2, 6)
+
+    else:  # SHORT
+        active_reasons = short_reasons
+        if at_resist:
+            entry_type = "SELL NOW 🔥"
+            entry_price = current
+            entry_rationale = f"Price is AT resistance zone ({nearest_resist:.5f}). Enter immediately."
+        elif near_resist:
+            entry_type = "SELL LIMIT 📌"
+            entry_price = round(nearest_resist - (atr * 0.05), 6)
+            entry_rationale = f"Set SELL LIMIT at {entry_price:.5f} — wait for price to reach resistance."
+        else:
+            entry_type = "SELL LIMIT 📌"
+            entry_price = round(nearest_resist - (atr * 0.05), 6) if nearest_resist else round(current + atr, 6)
+            entry_rationale = f"Resistance at {nearest_resist:.5f if nearest_resist else 'N/A'} — zone is far. Set limit and wait."
+
+        raw_sl = entry_price + (atr * 1.5)
+        sl_distance = raw_sl - entry_price
+
+        if sl_distance > max_sl_price:
+            raw_sl = entry_price + max_sl_price
+            sl_note = f"⚠️ SL adjusted to {max_sl_pips} pip limit for your {gp_name} game plan"
+        else:
+            sl_note = None
+
+        sl = round(raw_sl, 6)
+        tp1 = round(supports[0], 6) if supports else round(entry_price - atr * 2, 6)
+        tp2 = round(supports[1], 6) if len(supports) > 1 else round(entry_price - atr * 3.5, 6)
+        tp3 = round(entry_price - (entry_price - tp1) * 2, 6)
+
+    rr1 = abs(tp1 - entry_price) / abs(entry_price - sl) if abs(entry_price - sl) > 0 else 0
+    rr2 = abs(tp2 - entry_price) / abs(entry_price - sl) if abs(entry_price - sl) > 0 else 0
+    sl_pips = round(abs(entry_price - sl) / pip_value, 1)
+
+    flip_condition = (
+        f"EMA cross below + break of {round(supports[0],5) if supports else 'recent low'}"
+        if direction == "LONG"
+        else f"EMA cross above + break of {round(resistances[0],5) if resistances else 'recent high'}"
+    )
+
+    return {
+        "signal": f"{'LONG 📈' if direction == 'LONG' else 'SHORT 📉'}",
+        "direction": direction,
+        "entry_type": entry_type,
+        "entry_price": entry_price,
+        "entry_rationale": entry_rationale,
+        "stop_loss": sl,
+        "sl_pips": sl_pips,
+        "sl_pct": round(abs(entry_price - sl) / entry_price * 100, 3),
+        "sl_note": sl_note,
+        "tp1": tp1, "tp1_pct": round(abs(tp1-entry_price)/entry_price*100, 3),
+        "tp2": tp2, "tp2_pct": round(abs(tp2-entry_price)/entry_price*100, 3),
+        "tp3": tp3, "tp3_pct": round(abs(tp3-entry_price)/entry_price*100, 3),
+        "rr1": round(rr1, 2), "rr2": round(rr2, 2),
+        "rr_warning": rr1 < 1.5,
+        "rsi": rsi,
+        "overall_bias": overall_bias,
+        "structure": structure,
+        "ema_bias": "Bullish (EMA20>EMA50)" if ema_bull else "Bearish (EMA20<EMA50)",
+        "atr": round(atr, 6),
+        "supports": supports,
+        "resistances": resistances,
+        "active_reasons": active_reasons,
+        "flip_condition": flip_condition,
+        "current_price": current,
+        "gameplan": gp_name,
+        "max_sl_pips": max_sl_pips
+    }
+
+def get_pip_value(pair: str, market_type: str) -> float:
+    """Returns the value of 1 pip in price units"""
+    p = pair.upper()
+    if market_type == "index":
+        return 1.0          # indices: 1 pip = 1 point
+    if market_type == "energy":
+        return 0.01         # oil: 1 pip = $0.01
+    if "XAU" in p or "GOLD" in p:
+        return 0.10         # gold: 1 pip = $0.10
+    if "XAG" in p or "SILVER" in p:
+        return 0.001        # silver: 1 pip = $0.001
+    if "JPY" in p:
+        return 0.01         # JPY pairs: 1 pip = 0.01
+    return 0.0001           # standard forex: 1 pip = 0.0001
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CHANGE 4: /calendar COMMAND
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Add this to analyzer.py:
+
+async def fetch_economic_calendar(client: httpx.AsyncClient) -> list:
+    """
+    Fetch economic calendar from multiple sources with fallback.
+    Primary: Investing.com calendar API
+    Fallback: ForexFactory via scraping
+    Returns list of events sorted by time.
+    """
+    from datetime import datetime, timedelta
+    import urllib.parse
+    
+    today = datetime.utcnow()
+    week_end = today + timedelta(days=7)
+    
+    events = []
+    
+    # SOURCE 1: Try investing.com economic calendar API
+    try:
+        url = "https://economic-calendar.tradingview.com/events"
+        params = {
+            "from": today.strftime("%Y-%m-%dT00:00:00.000Z"),
+            "to": week_end.strftime("%Y-%m-%dT23:59:59.000Z"),
+            "countries": "US,EU,GB,JP,AU,CA,CH,CN,NZ,DE,FR",
+        }
+        r = await client.get(url, params=params, timeout=15,
+                             headers={"User-Agent": "Mozilla/5.0", "Referer": "https://www.tradingview.com"})
+        if r.status_code == 200:
+            data = r.json()
+            result = data if isinstance(data, list) else data.get("result", [])
+            for ev in result:
+                importance = ev.get("importance", 0)
+                if importance >= 1:  # filter low importance
+                    events.append({
+                        "date": ev.get("date","")[:10],
+                        "time": ev.get("date","")[11:16] if len(ev.get("date","")) > 10 else "All Day",
+                        "currency": ev.get("country",""),
+                        "name": ev.get("title",""),
+                        "importance": "🔴" if importance >= 3 else "🟡" if importance == 2 else "🟢",
+                        "actual": ev.get("actual","—"),
+                        "forecast": ev.get("forecast","—"),
+                        "previous": ev.get("previous","—"),
+                    })
+    except Exception:
+        pass
+
+    # SOURCE 2: Fallback — ForexFactory calendar (scrape basic data)
+    if not events:
+        try:
+            r = await client.get(
+                "https://nfs.faireconomy.media/ff_calendar_thisweek.json",
+                timeout=15,
+                headers={"User-Agent": "Mozilla/5.0"}
+            )
+            if r.status_code == 200:
+                data = r.json()
+                for ev in data:
+                    imp = ev.get("impact","Low")
+                    events.append({
+                        "date": ev.get("date","")[:10],
+                        "time": ev.get("date","")[11:16] if ev.get("date","") else "—",
+                        "currency": ev.get("country",""),
+                        "name": ev.get("title",""),
+                        "importance": "🔴" if imp == "High" else "🟡" if imp == "Medium" else "🟢",
+                        "actual": ev.get("actual","—") or "—",
+                        "forecast": ev.get("forecast","—") or "—",
+                        "previous": ev.get("previous","—") or "—",
+                    })
+        except Exception:
+            pass
+
+    # SOURCE 3: Last fallback — static message
+    if not events:
+        return [{"error": "Calendar data temporarily unavailable. Check: https://www.forexfactory.com/calendar"}]
+
+    return sorted(events, key=lambda x: x.get("date","") + x.get("time",""))
+
+Add to main.py:
+
+async def handle_calendar(update, context):
+    user_id = update.effective_user.id
+    
+    # Check if user wants today or week
+    arg = " ".join(context.args).lower().strip() if context.args else ""
+    show_week = "week" in arg or "minggu" in arg
+    
+    status = await update.message.reply_text("📅 Fetching economic calendar...")
+    
+    try:
+        async with httpx.AsyncClient(follow_redirects=True) as client:
+            events = await fetch_economic_calendar(client)
+        
+        if events and events[0].get("error"):
+            await status.edit_text(events[0]["error"])
+            return
+
+        from datetime import datetime, timedelta
+        today_str = datetime.utcnow().strftime("%Y-%m-%d")
+        
+        # Filter by today or week
+        if not show_week:
+            events = [e for e in events if e.get("date") == today_str]
+            title_label = f"📅 Economic Calendar — Today ({today_str})"
+        else:
+            title_label = "📅 Economic Calendar — This Week"
+
+        # Only show Medium + High impact
+        high_events = [e for e in events if e["importance"] in ["🔴", "🟡"]]
+        
+        if not high_events:
+            await status.edit_text(
+                f"📅 No high-impact events {'today' if not show_week else 'this week'}.\n\n"
+                f"Use /calendar week for full week view."
+            )
+            return
+
+        # Build message
+        msg = f"<b>{title_label}</b>\n"
+        msg += "━━━━━━━━━━━━━━━━━━━━\n\n"
+        
+        current_date = ""
+        for ev in high_events[:25]:  # max 25 events
+            if ev["date"] != current_date:
+                current_date = ev["date"]
+                try:
+                    d = datetime.strptime(current_date, "%Y-%m-%d")
+                    msg += f"\n📆 <b>{d.strftime('%A, %d %B %Y')}</b>\n"
+                except:
+                    msg += f"\n📆 <b>{current_date}</b>\n"
+            
+            msg += (
+                f"{ev['importance']} <b>{ev['currency']}</b> | {ev['time']} UTC\n"
+                f"   📌 {ev['name']}\n"
+                f"   Actual: <b>{ev['actual']}</b> | "
+                f"Forecast: {ev['forecast']} | "
+                f"Prev: {ev['previous']}\n\n"
+            )
+        
+        msg += "━━━━━━━━━━━━━━━━━━━━\n"
+        msg += "🔴 High Impact  🟡 Medium Impact\n"
+        msg += "Use /calendar week for full week view."
+        
+        await status.delete()
+        
+        # Split if too long
+        if len(msg) > 4096:
+            for i in range(0, len(msg), 4096):
+                await update.message.reply_text(msg[i:i+4096], parse_mode="HTML")
+        else:
+            await update.message.reply_text(msg, parse_mode="HTML")
+            
+    except Exception as e:
+        await status.edit_text(f"❌ Calendar error: {str(e)}")
+
+Register command in ApplicationBuilder setup:
+app.add_handler(CommandHandler("calendar", handle_calendar))
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CHANGE 5: UPDATED FOREX MESSAGE FORMAT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Replace format_forex_message in main.py with:
+
+def format_forex_message(pair, data, signal, narrative, gameplan) -> str:
+    current = signal.get("current_price", 0)
+    direction = signal.get("direction")
+    gp_name = gameplan.get("name", "Intraday")
+    equity = gameplan.get("equity", 0)
+    max_sl = gameplan.get("max_sl_pips", 100)
+
+    msg = f"""📊 <b>BUAT SENDIRI — Market Analysis</b>
+━━━━━━━━━━━━━━━━━━━━
+
+💱 <b>PAIR: {pair}</b>
+Current Price: <b>{current}</b>
+💼 Game Plan: <b>{gp_name}</b> (Equity: ${equity} | Max SL: {max_sl} pips)
+
+📐 <b>TECHNICAL OVERVIEW</b>
+Trend Bias: <b>{signal.get('overall_bias','—')}</b>
+Market Structure: <b>{signal.get('structure','—')}</b>
+EMA Signal: <b>{signal.get('ema_bias','—')}</b>
+RSI (14): <b>{signal.get('rsi','—')}</b>
+ATR (14): <b>{signal.get('atr','—')}</b>
+
+"""
+    if signal.get("supports"):
+        msg += "🟢 <b>Support Zones:</b>\n"
+        for i, s in enumerate(signal["supports"][:3], 1):
+            msg += f"   S{i}: <code>{s}</code>\n"
+        msg += "\n"
+
+    if signal.get("resistances"):
+        msg += "🔴 <b>Resistance Zones:</b>\n"
+        for i, r in enumerate(signal["resistances"][:3], 1):
+            msg += f"   R{i}: <code>{r}</code>\n"
+        msg += "\n"
+
+    msg += f"━━━━━━━━━━━━━━━━━━━━\n"
+    msg += f"📡 <b>ATLAS SIGNAL: {signal.get('signal','—')}</b>\n\n"
+
+    if direction in ["LONG", "SHORT"]:
+        entry_type = signal.get("entry_type","—")
+        entry_price = signal.get("entry_price", current)
+        sl = signal.get("stop_loss")
+        sl_pips = signal.get("sl_pips", "—")
+        rr_warn = "\n⚠️ R:R below 1.5 — consider waiting for better entry.\n" if signal.get("rr_warning") else ""
+
+        msg += f"""🎯 <b>TRADE SETUP</b>
+Direction: <b>{'📈 LONG (BUY)' if direction=='LONG' else '📉 SHORT (SELL)'}</b>
+
+⚡ <b>ENTRY: {entry_type}</b>
+<code>{entry_price}</code>
+💬 {signal.get('entry_rationale','')}
+
+🛑 <b>Stop Loss:</b> <code>{sl}</code>
+   (-{signal.get('sl_pct',0):.3f}% | {sl_pips} pips)
+"""
+        if signal.get("sl_note"):
+            msg += f"   {signal['sl_note']}\n"
+
+        msg += f"""
+🎯 <b>Take Profit Levels:</b>
+   TP1: <code>{signal.get('tp1')}</code> (+{signal.get('tp1_pct',0):.3f}%) — Take 40%
+   TP2: <code>{signal.get('tp2')}</code> (+{signal.get('tp2_pct',0):.3f}%) — Take 35%
+   TP3: <code>{signal.get('tp3')}</code> (+{signal.get('tp3_pct',0):.3f}%) — Trail 25%
+
+📐 <b>Risk:Reward</b>
+   → TP1: 1:{signal.get('rr1',0):.2f}
+   → TP2: 1:{signal.get('rr2',0):.2f}
+{rr_warn}
+📋 <b>Why this setup:</b>
+"""
+        for r in signal.get("active_reasons", []):
+            msg += f"   • {r}\n"
+
+        msg += f"\n🔄 <b>Setup invalidated if:</b>\n   {signal.get('flip_condition','—')}\n"
+
+    else:
+        msg += f"⏸️ <b>No valid entry at this time.</b>\n\n"
+        for r in signal.get("reasons", [signal.get("message","")]):
+            msg += f"   • {r}\n"
+        if signal.get("supports"):
+            msg += f"\n👀 Watch for price to reach S1: {signal['supports'][0]} for potential long setup."
+        if signal.get("resistances"):
+            msg += f"\n👀 Or reach R1: {signal['resistances'][0]} for potential short setup."
+
+    msg += f"\n\n🤖 <b>AI ANALYSIS</b>\n{narrative}\n"
+    msg += f"\n━━━━━━━━━━━━━━━━━━━━\n"
+    msg += f"🔗 Share: /analyze {pair}\n"
+    msg += f"📅 Economic news: /calendar"
+
+    return msg
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CHANGE 6: UPDATE /start AND /help
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Update /start message to:
+
+"👋 <b>Welcome to BUAT SENDIRI</b>
+<i>Blockchain Utility Analytics Tool</i>
+━━━━━━━━━━━━━━━━━━━━
+
+🚀 <b>What I can analyze:</b>
+
+💱 <b>Forex</b> — All major, minor & exotic pairs
+   EURUSD, GBPUSD, USDJPY, AUDUSD...
+
+🥇 <b>Metals & Energy</b>
+   XAUUSD (Gold), XAGUSD (Silver)
+   XTIUSD (WTI Oil), XBRUSD (Brent)
+
+📊 <b>Indices</b>
+   NAS100, SPX500, US30, GER40, UK100...
+
+📈 <b>Currency Index</b>
+   DXY, JPYX...
+
+🪙 <b>Meme Coins</b> — Paste any Solana CA
+
+━━━━━━━━━━━━━━━━━━━━
+<b>Commands:</b>
+/analyze &lt;pair or CA&gt; — Run full analysis
+/calendar — Today's economic events
+/calendar week — Full week calendar
+/history — Your last 10 analyses
+/reset_profile — Reset equity & game plan
+/help — Full guide"
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+FINAL REQUIREMENTS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. All files: main.py, analyzer.py, signals.py, ai_narrator.py, history.py, user_session.py, markets.py
+2. requirements.txt must include: python-telegram-bot==20.7, httpx==0.27.0, groq==0.9.0, python-dotenv==1.0.0
+3. Create Procfile: worker: python main.py
+4. Create railway.json: {"build":{"builder":"NIXPACKS"},"deploy":{"startCommand":"python main.py","restartPolicyType":"ON_FAILURE"}}
+5. NEVER hardcode secrets — all via os.getenv()
+6. All network calls wrapped in try/except with graceful fallback messages
+7. ConversationHandler states must not conflict with CommandHandlers
+8. Bot runs with application.run_polling(drop_pending_updates=True)
+9. Add /reset_profile command: clears user session so they can re-enter equity
+10. No syntax errors — review all code before outputting

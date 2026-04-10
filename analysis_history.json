@@ -1,0 +1,64 @@
+{
+  "6440208108": [
+    {
+      "pair": "EURUSD",
+      "signal": "SHORT \ud83d\udcc9",
+      "direction": "SHORT",
+      "timestamp": "2026-04-09 16:47 UTC"
+    },
+    {
+      "pair": "US100",
+      "signal": "SHORT \ud83d\udcc9",
+      "direction": "SHORT",
+      "timestamp": "2026-04-09 16:35 UTC"
+    },
+    {
+      "pair": "XAUUSD",
+      "signal": "LONG \ud83d\udcc8",
+      "direction": "LONG",
+      "timestamp": "2026-04-09 16:34 UTC"
+    },
+    {
+      "pair": "USDJPY",
+      "signal": "SHORT \ud83d\udcc9",
+      "direction": "SHORT",
+      "timestamp": "2026-04-09 16:27 UTC"
+    },
+    {
+      "pair": "USDJPY",
+      "signal": "SHORT \ud83d\udcc9",
+      "direction": "SHORT",
+      "timestamp": "2026-04-09 16:27 UTC"
+    },
+    {
+      "pair": "DXY",
+      "signal": "SHORT \ud83d\udcc9",
+      "direction": "SHORT",
+      "timestamp": "2026-04-09 16:26 UTC"
+    },
+    {
+      "pair": "AUDUSD",
+      "signal": "NO ENTRY \u23f8\ufe0f",
+      "direction": null,
+      "timestamp": "2026-04-09 16:26 UTC"
+    },
+    {
+      "pair": "US30",
+      "signal": "SHORT \ud83d\udcc9",
+      "direction": "SHORT",
+      "timestamp": "2026-04-09 16:26 UTC"
+    },
+    {
+      "pair": "SPX500",
+      "signal": "SHORT \ud83d\udcc9",
+      "direction": "SHORT",
+      "timestamp": "2026-04-09 16:26 UTC"
+    },
+    {
+      "pair": "NAS100",
+      "signal": "SHORT \ud83d\udcc9",
+      "direction": "SHORT",
+      "timestamp": "2026-04-09 16:25 UTC"
+    }
+  ]
+}
