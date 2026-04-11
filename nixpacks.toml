@@ -1,8 +1,8 @@
 [phases.setup]
-nixPkgs = ["nodejs_22", "pnpm-9_x", "openssl", "python3"]
+nixPkgs = ["nodejs_22", "pnpm-9_x", "openssl", "python3", "python3Packages.pip"]
 
 [phases.install]
-cmds = ["pip install -r requirements.txt --break-system-packages", "pnpm install --no-frozen-lockfile"]
+cmds = ["pip3 install -r requirements.txt --break-system-packages", "pnpm install --no-frozen-lockfile"]
 
 [phases.build]
 cmds = ["pnpm run build --filter=!@workspace/mockup-sandbox"]
