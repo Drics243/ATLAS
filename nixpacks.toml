@@ -5,4 +5,4 @@ nixPkgs = ["nodejs_22", "pnpm-9_x", "openssl"]
 cmds = ["pnpm install --no-frozen-lockfile"]
 
 [phases.build]
-cmds = ["pnpm run build"]
+cmds = ["pnpm run build --filter=!@workspace/mockup-sandbox"]
