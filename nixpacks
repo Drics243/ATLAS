@@ -1,2 +1,3 @@
 [phase.install]
+cmds = ["pnpm install --no-frozen-lockfi
 cmds = ["pnpm install --no-frozen-lockfile"]
